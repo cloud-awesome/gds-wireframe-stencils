@@ -1,0 +1,29 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    name: Create GitHub release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out tagged version
+        uses: actions/checkout@v6
+
+      - name: Create release from CHANGELOG.md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          gh release create "$TAG_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$TAG_NAME" \
+            --notes-file CHANGELOG.md \
+            --verify-tag
